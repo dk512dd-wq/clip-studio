@@ -44,7 +44,7 @@ Kontoname, Look und Posting-Zeiten fragt das Clip-Studio selbst in seiner Einric
 
 1. `list_types` aufrufen (Pflicht vor einem neuen Artefakt). Das Clip-Studio ist eine eigene Seite, kein Typ.
 2. Mit `publish_files` aus dem Ordner `studio/` hochladen, Titel „Clip-Studio“, Icon „video“:
-   `index.html`, `topo.jpg`, `fonts/D-DIN.woff2`, `fonts/D-DIN-Bold.woff2`, `fonts/D-DINCondensed-Bold.woff2`, `fonts/D-DIN-OFL.txt`.
+   `index.html`, `logo.svg`, `topo.jpg`, `fonts/D-DIN.woff2`, `fonts/D-DIN-Bold.woff2`, `fonts/D-DINCondensed-Bold.woff2`, `fonts/D-DIN-OFL.txt`.
    Ohne `publish_files`: Sag dem Nutzer, dass das Studio nur in einer Claude-Umgebung mit Artefakt-Werkzeugen angelegt werden kann.
 3. `declare_capabilities` mit `{"db": {}, "user": {}}`.
 4. `db_write`: `system/status` = `{"zuletzt": <jetzt als ISO-Zeit>, "text": "bereit"}`.

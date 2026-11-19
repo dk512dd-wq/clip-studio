@@ -1,3 +1,5 @@
+<img src="studio/logo.svg" width="72" alt="Clip-Studio Logo">
+
 # Clip-Studio
 
 > **Für Claude:** Der Nutzer möchte das Clip-Studio installieren. Lies und befolge [ANLEITUNG-FUER-CLAUDE.md](https://raw.githubusercontent.com/dk512dd-wq/clip-studio/main/ANLEITUNG-FUER-CLAUDE.md). Arbeite Schritt für Schritt und frag nur, was du nicht selbst herausfinden kannst.

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clip-Studio</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
@@ -54,8 +55,7 @@ header.kopf { position: sticky; top: 0; z-index: 10; }
 .leiste .in { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 .zeile { height: 58px; display: flex; align-items: center; gap: 14px; }
 .marke { display: flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; color: var(--text-primary); white-space: nowrap; }
-.marke .icon { width: 24px; height: 24px; position: relative; border: 1.5px solid var(--cream-100); }
-.marke .icon::after { content: ""; position: absolute; left: 5px; top: 5px; width: 11px; height: 11px; background: var(--orange-500); }
+.marke svg { width: 32px; height: 32px; display: block; flex: 0 0 auto; }
 .marke b { font: 700 22px/1 var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
 .status { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); }
 .status .sq { background: var(--text-muted); }
@@ -270,7 +270,7 @@ details.erweitert .block { border-color: transparent; }
   <div class="ticker mono"><div class="in"><span>Clippen. Bewerten. Planen.</span><span class="rechts"><span class="sq"></span>Läuft auf deinem eigenen Mac</span></div></div>
   <div class="leiste"><div class="in">
     <div class="zeile">
-      <a class="marke" href="#clips"><span class="icon"></span><b>Clip-Studio</b></a>
+      <a class="marke" href="#clips"><svg viewBox="0 0 32 32" aria-hidden="true"><defs><mask id="logo-schnitt"><rect width="32" height="32" fill="#fff"/><line x1="3" y1="24.6" x2="29" y2="8.2" stroke="#000" stroke-width="2.1"/></mask></defs><g mask="url(#logo-schnitt)"><rect x="9.25" y="4" width="13.5" height="24" fill="#F0A31B"/><path d="M13.9 11.4v9.2l7.1-4.6z" fill="#1D2418"/></g><path d="M4.5 6V2h4M27.5 6V2h-4M4.5 26v4h4M27.5 26v4h-4" fill="none" stroke="#EFEADD" stroke-width="1.8"/></svg><b>Clip-Studio</b></a>
       <span class="status mono" id="status"><span class="sq"></span><span id="status-text">Verbinde</span></span>
     </div>
     <nav class="kompass" aria-label="Bereiche">

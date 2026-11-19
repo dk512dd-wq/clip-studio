@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Clip-Studio">
+  <defs>
+    <mask id="schnitt"><rect width="32" height="32" fill="#fff"/><line x1="3" y1="24.6" x2="29" y2="8.2" stroke="#000" stroke-width="2.1"/></mask>
+  </defs>
+  <g mask="url(#schnitt)">
+    <rect x="9.25" y="4" width="13.5" height="24" fill="#F0A31B"/>
+    <path d="M13.9 11.4v9.2l7.1-4.6z" fill="#1D2418"/>
+  </g>
+  <path d="M4.5 6V2h4M27.5 6V2h-4M4.5 26v4h4M27.5 26v4h-4" fill="none" stroke="#EFEADD" stroke-width="1.8"/>
+</svg>
