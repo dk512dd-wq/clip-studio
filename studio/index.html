@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clip-Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+<style>
+/* Plan: Designsystem der Soldateninitiative. Oliv-Grund mit Hoehenlinien, Sand fuer Papierkarten,
+   Signal-Orange nur fuer Anfassbares. Keine Rundungen. Navigation als Kompass-Lineal.
+   Erst eine gefuehrte Einrichtung in vier Schritten, danach drei Bereiche. */
+@font-face { font-family: "D-DIN"; src: url("fonts/D-DIN.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "D-DIN"; src: url("fonts/D-DIN-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "D-DIN Condensed"; src: url("fonts/D-DINCondensed-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+:root {
+  --olive-950: #151A11; --olive-900: #1D2418; --olive-800: #232B1C; --olive-700: #2A331F; --olive-650: #3A4A2F; --olive-600: #3F4A30; --olive-500: #55603F;
+  --cream-50: #F5F1E7; --cream-100: #EFEADD;
+  --orange-500: #F0A31B; --orange-600: #D28E14; --orange-700: #98772D;
+  --text-primary: var(--cream-100); --text-secondary: rgba(239, 234, 221, .72); --text-muted: rgba(239, 234, 221, .5);
+  --text-on-paper: var(--olive-900); --text-on-paper-secondary: rgba(29, 36, 24, .72); --text-on-paper-muted: rgba(29, 36, 24, .5);
+  --border-hairline: rgba(239, 234, 221, .14); --border-strong: rgba(239, 234, 221, .32); --border-on-paper: rgba(29, 36, 24, .28);
+  --gut: #8FBF6A; --stop: #E2725B;
+  --font-display: "D-DIN Condensed", "DIN Condensed", "Arial Narrow", sans-serif;
+  --font-sans: "D-DIN", "DIN Alternate", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --scanlines: repeating-linear-gradient(0deg, rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--olive-900); color: var(--text-primary); font: 400 16px/1.62 var(--font-sans); -webkit-font-smoothing: antialiased; }
+body { background-image: url("topo.jpg"); background-size: 1600px auto; background-attachment: fixed; min-height: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+::selection { background: var(--orange-500); color: var(--olive-900); }
+:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--olive-900), 0 0 0 4px var(--orange-500); }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; line-height: 1.02; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
+.eyebrow { font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--orange-500); }
+.klammer { font: 400 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); white-space: nowrap; }
+.mono { font: 400 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.sq { display: inline-block; width: 8px; height: 8px; background: var(--orange-500); flex: 0 0 auto; }
+.lead { font-size: 18px; line-height: 1.5; color: var(--text-secondary); max-width: 58ch; }
+
+/* Kopf: Ticker und gerasterte Leiste */
+header.kopf { position: sticky; top: 0; z-index: 10; }
+.ticker { height: 26px; background: var(--cream-100); color: var(--text-on-paper-secondary); }
+.ticker .in { max-width: 1080px; margin: 0 auto; padding: 0 20px; height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.ticker span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; overflow: hidden; }
+.leiste { background: rgba(21, 26, 17, .82); background-image: var(--scanlines); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-hairline); }
+.leiste .in { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+.zeile { height: 58px; display: flex; align-items: center; gap: 14px; }
+.marke { display: flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; color: var(--text-primary); white-space: nowrap; }
+.marke .icon { width: 24px; height: 24px; position: relative; border: 1.5px solid var(--cream-100); }
+.marke .icon::after { content: ""; position: absolute; left: 5px; top: 5px; width: 11px; height: 11px; background: var(--orange-500); }
+.marke b { font: 700 22px/1 var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
+.status { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); }
+.status .sq { background: var(--text-muted); }
+.status.an .sq { background: var(--gut); }
+.status.alt .sq { background: var(--orange-500); }
+
+/* Kompass-Navigation */
+nav.kompass { position: relative; height: 56px; }
+nav.kompass .skala { position: absolute; left: 0; right: 64px; bottom: 0; height: 18px;
+  background: repeating-linear-gradient(90deg, var(--border-strong) 0 1px, transparent 1px 70px) 0 0/100% 18px no-repeat,
+              repeating-linear-gradient(90deg, var(--border-strong) 0 1px, transparent 1px 14px) 0 10px/100% 8px no-repeat; }
+nav.kompass .ziele { position: absolute; left: 0; right: 64px; top: 0; bottom: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+nav.kompass a { position: relative; text-decoration: none; color: var(--text-muted); text-align: center; padding-top: 8px; font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; transition: color .12s var(--ease); }
+nav.kompass a:hover { color: var(--text-primary); }
+nav.kompass a[aria-current="page"] { color: var(--text-primary); }
+nav.kompass a[aria-current="page"]::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 3px; height: 22px; margin-left: -1px; background: var(--orange-500); }
+nav.kompass a[aria-current="page"]::before { content: ""; position: absolute; left: 50%; bottom: 24px; width: 7px; height: 7px; margin-left: -3px; background: var(--orange-500); }
+nav.kompass .zahl { color: var(--orange-500); margin-left: 4px; }
+nav.kompass .peilung { position: absolute; right: 0; top: 8px; }
+
+/* Konten */
+.konten { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.chip { position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--border-strong); background: transparent; color: var(--text-primary); cursor: pointer; font: 400 11.5px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; transition: background .22s var(--ease), border-color .12s var(--ease); }
+.chip:hover { background: rgba(239, 234, 221, .06); }
+.chip .box { width: 10px; height: 10px; border: 1.5px solid currentColor; flex: 0 0 auto; }
+.chip[aria-pressed="true"] { border-color: var(--orange-500); background: rgba(240, 163, 27, .08); }
+.chip[aria-pressed="true"] .box { background: var(--orange-500); border-color: var(--orange-500); }
+.chip.gestrichelt { border-style: dashed; color: var(--text-secondary); }
+
+section.view { display: none; padding-top: 34px; }
+section.view.aktiv { display: block; }
+.kopfzeile { display: grid; gap: 12px; margin-bottom: 24px; }
+.kopfzeile h2 { font-size: clamp(34px, 6vw, 52px); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 15px 24px; border: 1px solid transparent; background: var(--orange-500); color: var(--olive-900); font: 700 13px/1 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; border-radius: 0; white-space: nowrap; transition: background .22s var(--ease); }
+.btn::before { content: ""; width: 8px; height: 8px; background: var(--olive-900); flex: 0 0 auto; }
+.btn:hover { background: var(--orange-600); }
+.btn.linie { background: transparent; color: var(--text-primary); border-color: var(--orange-500); }
+.btn.linie::before { background: var(--orange-500); }
+.btn.linie:hover { background: rgba(240, 163, 27, .08); }
+.btn.klein { padding: 12px 18px; font-size: 12px; }
+.btn.voll { width: 100%; }
+.btn:disabled { opacity: .4; pointer-events: none; }
+.ghost { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; padding: 0; color: var(--text-secondary); cursor: pointer; font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.ghost:hover { color: var(--orange-500); }
+.chev { color: var(--orange-500); font-family: var(--font-mono); font-size: 1.15em; line-height: 1; }
+
+/* Statistik-Leiste */
+.stat { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border-hairline); border-bottom: 1px solid var(--border-hairline); margin-bottom: 22px; }
+.stat div { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px 10px; font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+.stat div + div { border-left: 1px solid var(--border-hairline); }
+.stat .k { color: var(--text-muted); } .stat .s { color: var(--orange-500); } .stat .v { color: var(--text-primary); font-weight: 600; }
+.filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+/* Clip-Karten */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+.karte { background: var(--olive-800); border: 1px solid var(--border-hairline); padding: 20px; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 18px; transition: border-color .12s var(--ease); }
+.karte:hover { border-color: var(--border-strong); }
+.karte.eingeplant, .karte.gepostet, .karte.verworfen { opacity: .62; }
+.bild { position: relative; width: 96px; aspect-ratio: 9 / 16; background: var(--olive-950); overflow: hidden; }
+.bild img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bild .ph { position: absolute; inset: 10px 7px auto; background: #fff; color: #111; font: 800 7.5px/1.2 "Montserrat", sans-serif; padding: 4px; text-align: center; }
+.bild .ecke { position: absolute; width: 9px; height: 9px; border-color: var(--orange-500); border-style: solid; }
+.bild .e1 { left: 3px; top: 3px; border-width: 1.5px 0 0 1.5px; } .bild .e2 { right: 3px; top: 3px; border-width: 1.5px 1.5px 0 0; }
+.bild .e3 { left: 3px; bottom: 3px; border-width: 0 0 1.5px 1.5px; } .bild .e4 { right: 3px; bottom: 3px; border-width: 0 1.5px 1.5px 0; }
+.score-z { display: flex; align-items: baseline; gap: 8px; }
+.score { font: 400 44px/.9 var(--font-mono); color: var(--orange-500); letter-spacing: -.02em; }
+.score.mittel { color: var(--text-primary); } .score.schwach { color: var(--text-muted); }
+.score-z .von { color: var(--text-muted); }
+.karte h3 { font-size: 22px; margin-top: 12px; overflow-wrap: anywhere; }
+.karte .meta { color: var(--text-muted); margin-top: 8px; }
+.noten { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; }
+.noten span { color: var(--text-muted); } .noten b { color: var(--text-primary); font-weight: 600; margin-left: 5px; }
+details.mehr summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; margin-top: 12px; }
+details.mehr summary::-webkit-details-marker { display: none; }
+details.mehr summary:hover { color: var(--orange-500); }
+details.mehr[open] summary .chev { transform: rotate(90deg); display: inline-block; }
+details.mehr p { margin-top: 8px; color: var(--text-secondary); font-size: 15px; }
+.aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 16px; }
+.ok-text { color: var(--gut); }
+.copybox { grid-column: 1 / -1; background: var(--olive-950); border: 1px dashed var(--border-strong); padding: 12px; font-size: 14px; user-select: all; }
+
+/* Papierkarte und Eckrahmen */
+.papier { position: relative; background: var(--cream-50); color: var(--text-on-paper-secondary); border: 1px solid var(--border-on-paper); padding: 30px 28px; }
+.papier::before { content: ""; position: absolute; left: -1px; top: -1px; width: 130px; height: 4px; background: var(--olive-900); }
+.papier h3 { color: var(--text-on-paper); font-size: 28px; }
+.papier .eyebrow { color: var(--orange-700); }
+.rahmen { position: relative; border: 1px solid var(--border-hairline); background: var(--olive-600); padding: 28px; }
+.rahmen > .ec { position: absolute; width: 14px; height: 14px; border-color: var(--orange-500); border-style: solid; }
+.rahmen > .ec1 { left: -1px; top: -1px; border-width: 1px 0 0 1px; } .rahmen > .ec2 { right: -1px; top: -1px; border-width: 1px 1px 0 0; }
+.rahmen > .ec3 { left: -1px; bottom: -1px; border-width: 0 0 1px 1px; } .rahmen > .ec4 { right: -1px; bottom: -1px; border-width: 0 1px 1px 0; }
+.leer { border: 1px dashed var(--border-strong); padding: 26px; max-width: 640px; display: grid; gap: 12px; }
+.leer h3 { font-size: 28px; }
+
+/* Formular */
+.feld { display: grid; gap: 10px; margin-top: 18px; }
+.feld > label, .feld > .lbl { font: 400 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); }
+input[type="text"], input[type="number"], input[type="time"], select, textarea { width: 100%; border-radius: 0; border: 1px solid var(--border-strong); background: var(--olive-900); color: var(--text-primary); padding: 13px 14px; font-size: 16px; outline: none; transition: border-color .22s var(--ease); }
+input:focus, select:focus, textarea:focus { border-color: var(--orange-500); box-shadow: none; }
+textarea { resize: vertical; min-height: 84px; }
+.zweispaltig { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Einrichtung */
+.schrittleiste { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 6px 0 22px; }
+.schrittleiste span { height: 5px; background: var(--olive-600); }
+.schrittleiste span.an { background: var(--orange-500); }
+.einricht { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 28px; align-items: start; }
+.wahl { display: grid; gap: 10px; }
+.option { display: grid; grid-template-columns: 20px 1fr 14px; align-items: center; gap: 16px; width: 100%; text-align: left; padding: 18px 20px; background: var(--olive-800); border: 1px solid var(--border-strong); color: var(--text-primary); cursor: pointer; transition: border-color .22s var(--ease), background .22s var(--ease); }
+.option:hover { border-color: var(--orange-500); }
+.option[aria-pressed="true"] { background: var(--olive-650); border-color: var(--orange-500); }
+.option .box { width: 18px; height: 18px; border: 1.5px solid var(--cream-100); display: grid; place-items: center; }
+.option[aria-pressed="true"] .box::after { content: ""; width: 9px; height: 9px; background: var(--orange-500); }
+.option b { display: block; font: 700 19px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .01em; }
+.option small { display: block; color: var(--text-secondary); font-size: 14.5px; line-height: 1.45; margin-top: 3px; }
+.weiter { display: flex; align-items: center; gap: 18px; margin-top: 26px; flex-wrap: wrap; }
+
+/* Telefon-Vorschau */
+.vorschau { display: grid; gap: 10px; justify-items: center; position: sticky; top: 170px; }
+.phone { position: relative; width: 100%; max-width: 240px; aspect-ratio: 9 / 16; overflow: hidden; container-type: inline-size; border: 1px solid var(--border-strong);
+  background: radial-gradient(ellipse 60% 40% at 50% 44%, #5D6851 0%, #36402C 55%, #1A2015 100%); }
+.phone .k1 { position: absolute; left: 50%; top: 29%; width: 34%; aspect-ratio: 3 / 4; transform: translateX(-50%); border-radius: 50% 50% 46% 46%; background: #6E7A61; opacity: .55; }
+.phone .k2 { position: absolute; left: 50%; top: 53%; width: 76%; height: 52%; transform: translateX(-50%); border-radius: 46% 46% 0 0; background: #4E5A40; opacity: .6; }
+.v-hook { position: absolute; left: 50%; top: 6%; transform: translateX(-50%); max-width: 80%; background: #fff; color: #0F0F0F; border-radius: 1.6cqw; padding: 2.6cqw 3.5cqw; text-align: center; line-height: 1.22; font-family: "Montserrat", sans-serif; }
+.v-cap { position: absolute; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; font-family: "Bebas Neue", sans-serif; }
+.v-cap.klassik span, .v-cap.karaoke span { -webkit-text-stroke: .55cqw #000; paint-order: stroke fill; text-shadow: .4cqw .6cqw 1.2cqw rgba(0, 0, 0, .7); }
+.v-cap.box { padding: .5cqw 3cqw; border-radius: 2.4cqw; }
+.v-format { position: absolute; right: 8px; bottom: 7px; color: rgba(255, 255, 255, .6); }
+
+/* Neue Folge */
+.folge { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 20px; align-items: start; }
+.ablauf { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 14px; }
+.ablauf li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; color: var(--text-on-paper-secondary); }
+.ablauf .idx { width: 30px; height: 26px; display: grid; place-items: center; border: 1px solid var(--border-on-paper); color: var(--text-on-paper); font: 400 11px/1 var(--font-mono); }
+.ablauf li:first-child .idx { background: var(--orange-500); border-color: var(--orange-500); }
+.liste { display: grid; gap: 10px; margin-top: 30px; }
+.auftrag { background: var(--olive-800); border: 1px solid var(--border-hairline); padding: 16px 18px; display: grid; gap: 8px; }
+.auftrag .z1 { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.auftrag h4 { font-size: 20px; margin-right: auto; overflow-wrap: anywhere; }
+.auftrag .url { color: var(--text-muted); overflow-wrap: anywhere; text-transform: none; letter-spacing: .02em; }
+.badge { font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px; border: 1px solid var(--border-hairline); color: var(--text-secondary); white-space: nowrap; }
+.badge.neu { border-color: var(--orange-500); color: var(--orange-500); }
+.badge.laeuft { background: var(--orange-500); border-color: var(--orange-500); color: var(--olive-900); }
+.badge.fertig { border-color: var(--gut); color: var(--gut); }
+.badge.fehler { border-color: var(--stop); color: var(--stop); }
+.balken { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+.balken span { height: 5px; background: var(--olive-600); } .balken span.an { background: var(--orange-500); }
+
+/* Einstellungen */
+.einst { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 28px; align-items: start; }
+.block { background: var(--olive-800); border: 1px solid var(--border-hairline); padding: 22px 22px 8px; }
+.block + .block, .block + details, details + .block { margin-top: 14px; }
+.block-kopf { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.block-kopf h3 { font-size: 24px; }
+.block-kopf .klammer { margin-left: auto; }
+.kv { display: grid; grid-template-columns: minmax(130px, 36%) minmax(0, 1fr); gap: 8px 16px; align-items: center; padding: 13px 0; border-top: 1px solid var(--border-hairline); }
+.kv > .l { font-size: 16px; }
+.kv .hilfe { grid-column: 2; font-size: 14px; color: var(--text-muted); margin-top: -4px; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.seg .chip { padding: 9px 12px; }
+.schalter { display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; padding: 4px 0; cursor: pointer; font: 400 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-secondary); }
+.schalter .box { width: 18px; height: 18px; border: 1.5px solid var(--cream-100); display: grid; place-items: center; }
+.schalter[aria-checked="true"] .box::after { content: ""; width: 9px; height: 9px; background: var(--orange-500); }
+.schalter[aria-checked="true"] { color: var(--text-primary); }
+.regler { display: flex; align-items: center; gap: 12px; }
+.regler input[type="range"] { flex: 1; accent-color: var(--orange-500); }
+.regler output { min-width: 70px; text-align: right; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.farbe { display: flex; gap: 10px; align-items: center; }
+.farbe input[type="color"] { width: 42px; height: 32px; border: 1px solid var(--border-strong); background: var(--olive-900); padding: 2px; border-radius: 0; }
+.zahlfeld { max-width: 110px; }
+details.erweitert { margin-top: 14px; border: 1px solid var(--border-hairline); }
+details.erweitert > summary { list-style: none; cursor: pointer; padding: 18px 22px; display: flex; align-items: center; gap: 12px; font: 700 13px/1 var(--font-sans); letter-spacing: .08em; text-transform: uppercase; }
+details.erweitert > summary::-webkit-details-marker { display: none; }
+details.erweitert > summary:hover { background: rgba(239, 234, 221, .06); }
+details.erweitert[open] > summary .chev { transform: rotate(90deg); display: inline-block; }
+details.erweitert > .innen { padding: 0 14px 14px; }
+details.erweitert .block { border-color: transparent; }
+.gespeichert { color: var(--text-muted); } .gespeichert.ok { color: var(--gut); }
+
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 20; background: var(--cream-100); color: var(--olive-900); padding: 12px 18px; display: flex; gap: 10px; align-items: center; font: 400 11.5px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity .22s var(--ease); }
+.toast.zeigen { opacity: 1; }
+.banner { display: none; margin-top: 18px; border: 1px solid var(--orange-500); padding: 12px 16px; font-size: 15px; }
+.banner.zeigen { display: block; }
+
+@media (max-width: 860px) {
+  .einricht, .einst, .folge { grid-template-columns: 1fr; }
+  .vorschau { position: static; order: -1; }
+  .phone { max-width: 170px; }
+}
+@media (max-width: 520px) {
+  .wrap { padding: 0 16px 72px; }
+  .ticker .rechts { display: none; }
+  .grid { grid-template-columns: 1fr; }
+  .karte { grid-template-columns: 84px minmax(0, 1fr); padding: 16px; gap: 14px; }
+  .bild { width: 84px; }
+  .stat div { flex-direction: column; gap: 4px; padding: 14px 6px; }
+  .kv { grid-template-columns: 1fr; gap: 8px; }
+  .kv .hilfe { grid-column: 1; }
+  .status .lang { display: none; }
+  nav.kompass .peilung { display: none; }
+  nav.kompass a { letter-spacing: .06em; font-size: 10.5px; }
+  nav.kompass .skala, nav.kompass .ziele { right: 0; }
+  .papier, .rahmen { padding: 22px 18px; }
+  .zweispaltig { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="kopf">
+  <div class="ticker mono"><div class="in"><span>Clippen. Bewerten. Planen.</span><span class="rechts"><span class="sq"></span>Läuft auf deinem eigenen Mac</span></div></div>
+  <div class="leiste"><div class="in">
+    <div class="zeile">
+      <a class="marke" href="#clips"><span class="icon"></span><b>Clip-Studio</b></a>
+      <span class="status mono" id="status"><span class="sq"></span><span id="status-text">Verbinde</span></span>
+    </div>
+    <nav class="kompass" aria-label="Bereiche">
+      <div class="skala"></div>
+      <div class="ziele">
+        <a href="#clips" data-view="clips" aria-current="page">Clips<span class="zahl" id="zahl-clips"></span></a>
+        <a href="#folge" data-view="folge">Neue Folge<span class="zahl" id="zahl-folge"></span></a>
+        <a href="#einstellungen" data-view="einstellungen">Einstellungen</a>
+      </div>
+      <span class="peilung klammer" id="peilung">[ 000° ]</span>
+    </nav>
+  </div></div>
+</header>
+
+<main class="wrap">
+  <div class="konten" id="konten" role="group" aria-label="Konto"></div>
+  <div class="banner" id="banner"></div>
+
+  <!-- Einrichtung -->
+  <section class="view" id="view-einrichtung">
+    <div class="kopfzeile">
+      <span class="eyebrow" id="e-schritt">// Einrichtung · Schritt 01 von 04</span>
+      <h2 id="e-titel">Wie heißt dein Konto.</h2>
+      <p class="lead" id="e-text"></p>
+    </div>
+    <div class="schrittleiste" id="e-leiste"><span></span><span></span><span></span><span></span></div>
+    <div class="einricht">
+      <div id="e-inhalt"></div>
+      <aside class="vorschau" id="e-vorschau" aria-label="Vorschau"></aside>
+    </div>
+  </section>
+
+  <!-- Clips -->
+  <section class="view" id="view-clips">
+    <div class="kopfzeile">
+      <span class="eyebrow">// Clips</span>
+      <h2>Bereit zum Posten.</h2>
+    </div>
+    <div class="stat">
+      <div><span class="k">Bereit</span><span class="s">/</span><span class="v" id="d-bereit">00</span></div>
+      <div><span class="k">Ø Score</span><span class="s">/</span><span class="v" id="d-score">00</span></div>
+      <div><span class="k">Eingeplant</span><span class="s">/</span><span class="v" id="d-geplant">00</span></div>
+    </div>
+    <div class="filter" id="filter"></div>
+    <div class="grid" id="clip-grid"></div>
+  </section>
+
+  <!-- Neue Folge -->
+  <section class="view" id="view-folge">
+    <div class="kopfzeile">
+      <span class="eyebrow">// Neue Folge</span>
+      <h2>Link rein. Fertig.</h2>
+    </div>
+    <div class="folge">
+      <form class="rahmen" id="auftrag-form" autocomplete="off">
+        <span class="ec ec1"></span><span class="ec ec2"></span><span class="ec ec3"></span><span class="ec ec4"></span>
+        <div class="feld" style="margin-top:0">
+          <label for="a-links" id="a-label">[ YouTube-Link ]</label>
+          <textarea id="a-links" rows="3" placeholder="https://www.youtube.com/watch?v=..."></textarea>
+        </div>
+        <details class="mehr">
+          <summary>Optional <span class="chev">›</span></summary>
+          <div class="zweispaltig">
+            <div class="feld"><label for="a-folge">[ Folgenname ]</label><input type="text" id="a-folge" placeholder="z. B. Folge 12"></div>
+            <div class="feld"><label for="a-anzahl">[ Anzahl Clips ]</label><input type="number" id="a-anzahl" min="1" max="30" value="10"></div>
+          </div>
+          <div class="feld"><label for="a-hinweis">[ Hinweis für diese Folge ]</label><input type="text" id="a-hinweis" placeholder="z. B. Fokus auf den Streit am Anfang"></div>
+        </details>
+        <div class="weiter"><button type="submit" class="btn voll" id="a-senden">Auftrag anlegen</button></div>
+        <p class="mono ok-text" id="a-ok" style="margin-top:12px"></p>
+      </form>
+      <div class="papier">
+        <span class="eyebrow">// So läuft es ab</span>
+        <h3 style="margin-top:10px">Drei Schritte.</h3>
+        <ol class="ablauf">
+          <li><span class="idx">01</span><span>Link einfügen und Auftrag anlegen.</span></li>
+          <li><span class="idx">02</span><span>Claude im Chat schreiben: „Clips machen“. Mit Nachtlauf passiert das von selbst.</span></li>
+          <li><span class="idx">03</span><span>Fertige Clips erscheinen unter Clips. Die Dateien liegen in Downloads › Clip-Tool › clips.</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="liste" id="auftrag-liste"></div>
+  </section>
+
+  <!-- Einstellungen -->
+  <section class="view" id="view-einstellungen">
+    <div class="kopfzeile">
+      <span class="eyebrow">// Einstellungen</span>
+      <h2>Feste Einstellungen.</h2>
+      <p class="lead">Gilt für jeden neuen Auftrag dieses Kontos. Wird sofort gespeichert. <span class="mono gespeichert" id="gespeichert"></span></p>
+    </div>
+    <div class="einst">
+      <div id="einst-inhalt"></div>
+      <aside class="vorschau" id="s-vorschau" aria-label="Vorschau"></aside>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"><span class="sq"></span><span id="toast-text"></span></div>
+
+<script>
+(() => {
+  const MOMENTE = ["Hook-Momente", "Emotionen", "Starke Meinungen", "Enthüllungen", "Konflikte", "Zitierfähige Sätze", "Story-Höhepunkte", "Humor"];
+  const GENRES = [["auto", "Automatisch"], ["reality", "Reality-TV"], ["doku", "Doku"], ["podcast", "Podcast"], ["interview", "Interview"], ["comedy", "Comedy"], ["gaming", "Gaming"], ["sport", "Sport"]];
+  const BEISPIEL = "Damit hat hier keiner gerechnet";
+  const FILTER = [["neu", "Bereit"], ["eingeplant", "Eingeplant"], ["gepostet", "Gepostet"], ["alle", "Alle"]];
+
+  function standard(id, name) {
+    return {
+      konto: id, name: name || id,
+      auswahl: { clips_pro_folge: 10, laenge_min: 20, laenge_max: 90, mindest_score: 70, genre: "auto", momente: MOMENTE.slice(), bevorzugt: "", ausschliessen: "", hinweis: "" },
+      stil: { layout: "fuellen", fps: 25, qualitaet: "hoch", untertitel: true, untertitel_stil: "opus_klassik", untertitel_woerter: 2, untertitel_max_zeichen: 16,
+        untertitel_groesse: 0.11, untertitel_hoehe: 0.805, untertitel_farbe: "#FFFFFF", akzent_farbe: "#FFD60A", schluesselwoerter_faerben: false,
+        grossbuchstaben: true, pop_animation: true, hook: true, hook_schreibweise: "gross", hook_dauer: 3, hook_groesse: 0.052, intro_wort: false },
+      posten: { hashtags: "", vorlage: "{titel} {hashtags}", pro_tag: 4, von: 10, bis: 20 },
+      automatik: { nachtlauf: false, uhrzeit: "02:00", iphone: false },
+    };
+  }
+
+  // Grundeinstellungen (sichtbar) und Feineinstellungen (aufklappbar)
+  const GRUND = [
+    ["Look", "So sehen die Clips aus", [
+      { k: "stil.hook_schreibweise", t: "seg", l: "Hook-Titel", opt: [["gross", "GROSS"], ["normal", "Normal"]] },
+      { k: "stil.untertitel_stil", t: "seg", l: "Untertitel", opt: [["opus_klassik", "Klassisch"], ["karaoke", "Karaoke"], ["box", "Box"]] },
+    ]],
+    ["Posten", "TikTok", [
+      { k: "posten.hashtags", t: "text", l: "Hashtags", ph: "#thema #serie" },
+      { k: "posten.pro_tag", t: "seg", l: "Posts pro Tag", opt: [[1, "1"], [2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"]] },
+      { k: "posten.von", t: "zahl", l: "Erster Post", min: 0, max: 23, einheit: "Uhr" },
+      { k: "posten.bis", t: "zahl", l: "Letzter Post", min: 0, max: 23, einheit: "Uhr" },
+    ]],
+    ["Automatik", "Was Claude übernimmt", [
+      { k: "automatik.nachtlauf", t: "schalter", l: "Nachts clippen", h: "Neue Folgen werden nachts geclippt. Der Mac muss an sein." },
+      { k: "automatik.uhrzeit", t: "zeit", l: "Startzeit" },
+      { k: "automatik.iphone", t: "schalter", l: "Auf dem iPhone einplanen", h: "Claude plant fertige Clips in TikTok Studio ein. Das iPhone hängt dafür per Kabel am Mac." },
+    ]],
+  ];
+  const FEIN = [
+    ["Auswahl", "Was Claude sucht", [
+      { k: "name", t: "text", l: "Kontoname" },
+      { k: "auswahl.clips_pro_folge", t: "zahl", l: "Clips pro Folge", min: 1, max: 30 },
+      { k: "auswahl.laenge_min", t: "zahl", l: "Länge ab", min: 5, max: 180, einheit: "Sekunden" },
+      { k: "auswahl.laenge_max", t: "zahl", l: "Länge bis", min: 10, max: 300, einheit: "Sekunden" },
+      { k: "auswahl.mindest_score", t: "regler", l: "Mindest-Score", min: 40, max: 95, step: 1, fmt: v => v + " / 100" },
+      { k: "auswahl.genre", t: "auswahl", l: "Genre", opt: GENRES },
+      { k: "auswahl.momente", t: "mehrfach", l: "Momente", opt: MOMENTE },
+      { k: "auswahl.bevorzugt", t: "text", l: "Bevorzugte Themen", ph: "z. B. Ausbilder, Marsch, Stube" },
+      { k: "auswahl.ausschliessen", t: "text", l: "Ausschließen", ph: "z. B. Werbung, Intro, Abspann" },
+      { k: "auswahl.hinweis", t: "lang", l: "Hinweis an Claude", ph: "z. B. Lieber kurze Clips mit klarem Ende." },
+    ]],
+    ["Untertitel", "Wort für Wort", [
+      { k: "stil.untertitel", t: "schalter", l: "Untertitel" },
+      { k: "stil.untertitel_woerter", t: "seg", l: "Wörter je Einblendung", opt: [[1, "1"], [2, "2"], [3, "3"]] },
+      { k: "stil.untertitel_groesse", t: "regler", l: "Größe", min: 0.08, max: 0.15, step: 0.005, fmt: v => (Math.round(v * 1000) / 10).toString().replace(".", ",") + " %" },
+      { k: "stil.untertitel_hoehe", t: "regler", l: "Position", min: 0.55, max: 0.9, step: 0.005, fmt: v => Math.round(v * 100) + " % Höhe" },
+      { k: "stil.untertitel_farbe", t: "farbe", l: "Textfarbe" },
+      { k: "stil.akzent_farbe", t: "farbe", l: "Akzentfarbe" },
+      { k: "stil.grossbuchstaben", t: "schalter", l: "Großbuchstaben" },
+      { k: "stil.pop_animation", t: "schalter", l: "Pop-Animation" },
+      { k: "stil.schluesselwoerter_faerben", t: "schalter", l: "Schlüsselwörter einfärben" },
+    ]],
+    ["Hook-Titel", "Die ersten Sekunden", [
+      { k: "stil.hook", t: "schalter", l: "Hook-Titel oben" },
+      { k: "stil.hook_dauer", t: "regler", l: "Dauer", min: 1.5, max: 6, step: 0.5, fmt: v => String(v).replace(".", ",") + " s" },
+      { k: "stil.hook_groesse", t: "regler", l: "Größe", min: 0.04, max: 0.07, step: 0.002, fmt: v => (Math.round(v * 1000) / 10).toString().replace(".", ",") + " %" },
+      { k: "stil.intro_wort", t: "schalter", l: "Großes Intro-Wort" },
+    ]],
+    ["Bild", "Format und Schnitt", [
+      { k: null, t: "fest", l: "Format", wert: "9:16 · 1080 × 1920 · H.264" },
+      { k: "stil.layout", t: "seg", l: "Zuschnitt", opt: [["fuellen", "Gesicht folgen"], ["anpassen", "Ganzes Bild"]] },
+      { k: "stil.fps", t: "seg", l: "Bildrate", opt: [[25, "25 fps"], [30, "30 fps"]] },
+      { k: "stil.qualitaet", t: "seg", l: "Qualität", opt: [["mittel", "Gut"], ["hoch", "Hoch"], ["maximal", "Maximal"]] },
+      { k: "posten.vorlage", t: "text", l: "Beschreibung", h: "{titel} und {hashtags} werden ersetzt." },
+    ]],
+  ];
+
+  const S = { konten: [], konto: null, view: "clips", filter: "neu", einst: {}, gespeichert: {}, clips: [], auftraege: [], status: null, db: null, setup: null };
+  let gemerkt = null; try { gemerkt = localStorage.getItem("clipstudio-konto"); } catch (e) {}
+
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const holen = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+  const setzen = (o, p, v) => { const ks = p.split("."); let a = o; ks.slice(0, -1).forEach(k => { a[k] = a[k] || {}; a = a[k]; }); a[ks[ks.length - 1]] = v; };
+  const tief = (base, extra) => { const out = JSON.parse(JSON.stringify(base)); (function m(t, s) { for (const k in s) { if (s[k] && typeof s[k] === "object" && !Array.isArray(s[k]) && t[k] && typeof t[k] === "object") m(t[k], s[k]); else t[k] = s[k]; } })(out, extra || {}); return out; };
+  const zeit = iso => { if (!iso) return ""; const d = new Date(iso); if (isNaN(d)) return ""; return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" }) + " " + d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }); };
+  const dauer = s => { s = Math.round(Number(s) || 0); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+  const zwei = n => String(n).padStart(2, "0");
+  const slug = n => (n || "").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "konto";
+  const kontoName = id => (S.konten.find(k => k.id === id) || {}).name || (S.einst[id] || {}).name || id;
+  const E = () => S.einst[S.konto] || (S.konto ? (S.einst[S.konto] = standard(S.konto, kontoName(S.konto))) : standard("konto"));
+  let toastT; function toast(t) { $("#toast-text").textContent = t; $("#toast").classList.add("zeigen"); clearTimeout(toastT); toastT = setTimeout(() => $("#toast").classList.remove("zeigen"), 2200); }
+  function banner(t) { const b = $("#banner"); b.textContent = t || ""; b.classList.toggle("zeigen", !!t); }
+
+  // ---------- Vorschau (Telefon)
+  function phoneHtml() { return `<span class="klammer">[ Vorschau ]</span><div class="phone"><div class="k1"></div><div class="k2"></div><div class="v-hook"></div><div class="v-cap klassik"></div><div class="v-format mono">1080 × 1920</div></div>`; }
+  function zeichneVorschau(root, st) {
+    if (!root) return;
+    const hook = root.querySelector(".v-hook"), cap = root.querySelector(".v-cap"); if (!hook) return;
+    const gross = st.hook_schreibweise === "gross";
+    hook.hidden = !st.hook; hook.textContent = gross ? BEISPIEL.toUpperCase() : BEISPIEL;
+    hook.style.fontWeight = gross ? "800" : "600"; hook.style.fontSize = (st.hook_groesse * 100) + "cqw";
+    cap.hidden = !st.untertitel;
+    const w = ["Das", "ist", "krass"].slice(0, st.untertitel_woerter).map(x => st.grossbuchstaben ? x.toUpperCase() : x);
+    const stil = st.untertitel_stil === "box" ? "box" : st.untertitel_stil === "karaoke" ? "karaoke" : "klassik";
+    cap.className = "v-cap " + stil; cap.style.top = (st.untertitel_hoehe * 100) + "%"; cap.style.fontSize = (st.untertitel_groesse * 112) + "cqw";
+    cap.style.background = stil === "box" ? st.akzent_farbe : "transparent";
+    cap.innerHTML = w.map((x, i) => `<span style="color:${esc(stil === "box" ? "#0C0C0C" : (stil === "karaoke" && i === Math.min(1, w.length - 1)) ? st.akzent_farbe : st.untertitel_farbe)}">${esc(x)}</span>`).join(" ");
+  }
+
+  // ---------- Navigation
+  function zeigeView(v) {
+    if (S.setup) v = "einrichtung";
+    if (!["clips", "folge", "einstellungen", "einrichtung"].includes(v)) v = "clips";
+    S.view = v;
+    document.querySelectorAll("section.view").forEach(s => s.classList.toggle("aktiv", s.id === "view-" + v));
+    document.querySelectorAll("nav.kompass a").forEach(a => a.setAttribute("aria-current", a.dataset.view === v ? "page" : "false"));
+    $("#peilung").textContent = { clips: "[ 000° ]", folge: "[ 120° ]", einstellungen: "[ 240° ]", einrichtung: "[ 360° ]" }[v];
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", () => zeigeView(location.hash.slice(1)));
+
+  // ---------- Konten
+  function zeichneKonten() {
+    $("#konten").innerHTML = S.konten.map(k => `<button type="button" class="chip" data-konto="${esc(k.id)}" aria-pressed="${String(k.id === S.konto && !S.setup)}"><span class="box"></span>${esc(k.name)}</button>`).join("")
+      + `<button type="button" class="chip gestrichelt" data-neu="1" aria-pressed="${String(!!S.setup)}">+ Konto</button>`;
+  }
+  $("#konten").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.neu) { starteEinrichtung(); return; }
+    S.setup = null; S.konto = b.dataset.konto; try { localStorage.setItem("clipstudio-konto", S.konto); } catch (e2) {}
+    allesZeichnen(); zeigeView(S.view === "einrichtung" ? "clips" : S.view);
+  });
+
+  // ---------- Einrichtung in vier Schritten
+  function starteEinrichtung() { const d = standard("neu", ""); d.name = ""; S.setup = { schritt: 1, d }; zeichneKonten(); zeichneEinrichtung(); zeigeView("einrichtung"); }
+  const SCHRITTE = [
+    ["Wie heißt dein Konto.", "Ein Name reicht. So findest du das Konto später wieder."],
+    ["Wie sollen deine Clips aussehen.", "Zwei Entscheidungen. Rechts siehst du sofort, wie es wirkt."],
+    ["Wie oft willst du posten.", "Daraus plant Claude die Uhrzeiten."],
+    ["Was soll Claude übernehmen.", "Du kannst das jederzeit in den Einstellungen ändern."],
+  ];
+  function optionHtml(gruppe, wert, titel, text, an) {
+    return `<button type="button" class="option" data-g="${gruppe}" data-v="${esc(JSON.stringify(wert))}" aria-pressed="${String(!!an)}"><span class="box"></span><span><b>${esc(titel)}</b>${text ? `<small>${esc(text)}</small>` : ""}</span><span class="chev">›</span></button>`;
+  }
+  function zeichneEinrichtung() {
+    const s = S.setup; if (!s) return; const d = s.d, n = s.schritt;
+    $("#e-schritt").textContent = `// Einrichtung · Schritt ${zwei(n)} von 04`;
+    $("#e-titel").textContent = SCHRITTE[n - 1][0];
+    $("#e-text").textContent = SCHRITTE[n - 1][1];
+    document.querySelectorAll("#e-leiste span").forEach((x, i) => x.classList.toggle("an", i < n));
+    let h = "";
+    if (n === 1) {
+      h = `<div class="feld" style="margin-top:0"><label for="s-name">[ Name des TikTok-Kontos ]</label><input type="text" id="s-name" value="${esc(d.name)}" placeholder="z. B. Stubenbuddy"></div>`;
+    } else if (n === 2) {
+      h = `<div class="feld" style="margin-top:0"><span class="lbl">[ Hook-Titel oben im Bild ]</span><div class="wahl">`
+        + optionHtml("stil.hook_schreibweise", "gross", "GROSS", "Laut und auffällig.", d.stil.hook_schreibweise === "gross")
+        + optionHtml("stil.hook_schreibweise", "normal", "Normal", "Ruhiger und gut lesbar.", d.stil.hook_schreibweise === "normal")
+        + `</div></div><div class="feld"><span class="lbl">[ Untertitel unten ]</span><div class="wahl">`
+        + optionHtml("stil.untertitel_stil", "opus_klassik", "Klassisch", "Weiß mit dunklem Rand, wie bei Opus.", d.stil.untertitel_stil === "opus_klassik")
+        + optionHtml("stil.untertitel_stil", "karaoke", "Karaoke", "Das gesprochene Wort leuchtet gelb.", d.stil.untertitel_stil === "karaoke")
+        + optionHtml("stil.untertitel_stil", "box", "Box", "Schwarze Schrift auf gelbem Feld.", d.stil.untertitel_stil === "box")
+        + `</div></div>`;
+    } else if (n === 3) {
+      h = `<div class="feld" style="margin-top:0"><label for="s-tags">[ Hashtags für jeden Post ]</label><input type="text" id="s-tags" value="${esc(d.posten.hashtags)}" placeholder="#thema #serie"></div>
+        <div class="feld"><span class="lbl">[ Posts pro Tag ]</span><div class="seg">${[1, 2, 3, 4, 5, 6].map(x => `<button type="button" class="chip" data-g="posten.pro_tag" data-v="${x}" aria-pressed="${String(d.posten.pro_tag === x)}"><span class="box"></span>${x}</button>`).join("")}</div></div>
+        <div class="zweispaltig"><div class="feld"><label for="s-von">[ Erster Post · Uhr ]</label><input type="number" id="s-von" min="0" max="23" value="${d.posten.von}"></div><div class="feld"><label for="s-bis">[ Letzter Post · Uhr ]</label><input type="number" id="s-bis" min="0" max="23" value="${d.posten.bis}"></div></div>`;
+    } else {
+      h = `<div class="wahl">`
+        + optionHtml("automatik.nachtlauf", !d.automatik.nachtlauf, "Nachts automatisch clippen", "Neue Links werden über Nacht geclippt. Morgens liegen die Clips bereit.", d.automatik.nachtlauf)
+        + optionHtml("automatik.iphone", !d.automatik.iphone, "Clips auf dem iPhone einplanen", "Claude plant die fertigen Clips direkt in TikTok Studio ein. Das iPhone hängt dafür per Kabel am Mac.", d.automatik.iphone)
+        + `</div><p class="mono" style="color:var(--text-muted);margin-top:16px">[ Danach schreibst du Claude: Automatik einrichten ]</p>`;
+    }
+    h += `<div class="weiter"><button type="button" class="btn" id="s-weiter">${n < 4 ? "Weiter" : "Einrichtung abschließen"}</button>${n > 1 ? `<button type="button" class="ghost" id="s-zurueck"><span class="chev">‹</span> Zurück</button>` : S.konten.length ? `<button type="button" class="ghost" id="s-abbruch">Abbrechen <span class="chev">›</span></button>` : ""}</div>`;
+    $("#e-inhalt").innerHTML = h;
+    const v = $("#e-vorschau");
+    if (n === 2) { v.hidden = false; v.innerHTML = phoneHtml(); zeichneVorschau(v, d.stil); } else { v.hidden = true; v.innerHTML = ""; }
+    if (n === 1) setTimeout(() => { const i = $("#s-name"); if (i && !("ontouchstart" in window)) i.focus(); }, 30);
+  }
+  function setupLesen() {
+    const d = S.setup.d;
+    const nm = $("#s-name"); if (nm) d.name = nm.value.trim();
+    const tg = $("#s-tags"); if (tg) d.posten.hashtags = tg.value.trim();
+    const vo = $("#s-von"); if (vo) d.posten.von = Math.max(0, Math.min(23, parseInt(vo.value, 10) || 0));
+    const bi = $("#s-bis"); if (bi) d.posten.bis = Math.max(0, Math.min(23, parseInt(bi.value, 10) || 0));
+  }
+  $("#e-inhalt").addEventListener("click", async e => {
+    const s = S.setup; if (!s) return;
+    const opt = e.target.closest("[data-g]");
+    if (opt) {
+      const v = JSON.parse(opt.dataset.v); setupLesen(); setzen(s.d, opt.dataset.g, v);
+      zeichneEinrichtung(); return;
+    }
+    if (e.target.closest("#s-zurueck")) { setupLesen(); s.schritt--; zeichneEinrichtung(); return; }
+    if (e.target.closest("#s-abbruch")) { S.setup = null; allesZeichnen(); zeigeView("clips"); return; }
+    if (e.target.closest("#s-weiter")) {
+      setupLesen();
+      if (s.schritt === 1 && !s.d.name) { toast("Bitte einen Namen eintragen"); return; }
+      if (s.schritt < 4) { s.schritt++; zeichneEinrichtung(); return; }
+      await einrichtungSpeichern();
+    }
+  });
+  $("#e-inhalt").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "s-name") { e.preventDefault(); $("#s-weiter").click(); } });
+  async function einrichtungSpeichern() {
+    if (!S.db) { toast("Speichern geht gerade nicht"); return; }
+    const d = S.setup.d; let id = slug(d.name), n = 2; while (S.konten.some(k => k.id === id)) id = slug(d.name) + "-" + n++;
+    d.konto = id; d.aktualisiert = new Date().toISOString();
+    const liste = S.konten.concat([{ id, name: d.name }]);
+    const btn = $("#s-weiter"); if (btn) btn.disabled = true;
+    try {
+      await S.db.doc("einstellungen/" + id).set(d);
+      await S.db.doc("system/konten").set({ liste });
+      S.einst[id] = d; S.konten = liste; S.konto = id; S.setup = null;
+      try { localStorage.setItem("clipstudio-konto", id); } catch (e) {}
+      allesZeichnen(); location.hash = "folge"; zeigeView("folge");
+      toast("Eingerichtet. Jetzt den ersten Link einfügen");
+    } catch (e) { toast("Konnte nicht speichern"); if (btn) btn.disabled = false; }
+  }
+
+  // ---------- Clips
+  $("#filter").innerHTML = FILTER.map(([v, l]) => `<button type="button" class="chip" data-filter="${v}" aria-pressed="false"><span class="box"></span>${l}</button>`).join("");
+  $("#filter").addEventListener("click", e => { const b = e.target.closest("[data-filter]"); if (!b) return; S.filter = b.dataset.filter; zeichneClips(); });
+  const scoreKl = s => s >= 80 ? "" : s >= 70 ? "mittel" : "schwach";
+  function beschreibung(c) {
+    const p = (S.einst[c.konto] || E()).posten || {};
+    return (p.vorlage || "{titel} {hashtags}").replace("{titel}", c.titel || "").replace("{hashtags}", p.hashtags || "").replace(/\s+/g, " ").trim();
+  }
+  function zeichneClips() {
+    document.querySelectorAll("[data-filter]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.filter === S.filter)));
+    const alle = S.clips.filter(c => c.konto === S.konto);
+    const bereit = alle.filter(c => (c.status || "neu") === "neu");
+    const sc = bereit.length ? Math.round(bereit.reduce((a, c) => a + (Number(c.score) || 0), 0) / bereit.length) : 0;
+    $("#d-bereit").textContent = zwei(bereit.length); $("#d-score").textContent = zwei(sc);
+    $("#d-geplant").textContent = zwei(alle.filter(c => c.status === "eingeplant").length);
+    $("#zahl-clips").textContent = bereit.length ? "[" + bereit.length + "]" : "";
+    const liste = (S.filter === "alle" ? alle : alle.filter(c => (c.status || "neu") === S.filter)).slice().sort((a, b) => (b.score || 0) - (a.score || 0));
+    const g = $("#clip-grid");
+    if (!S.konto) { g.innerHTML = `<div class="leer"><span class="eyebrow">// Start</span><h3>Leg dein erstes Konto an.</h3><p class="lead">Die Einrichtung dauert eine Minute.</p><div><button type="button" class="btn" data-start="1">Einrichtung starten</button></div></div>`; return; }
+    if (!liste.length) {
+      g.innerHTML = alle.length
+        ? `<div class="leer"><h3>Hier ist gerade nichts.</h3><p class="lead">Schau unter „Alle“.</p></div>`
+        : `<div class="leer"><span class="eyebrow">// Noch leer</span><h3>Noch keine Clips.</h3><p class="lead">Füg unter „Neue Folge“ einen YouTube-Link ein und schreib Claude „Clips machen“. Hier stehen dann alle Clips mit Score und Begründung.</p><div><a class="btn" href="#folge">Neue Folge</a></div></div>`;
+      return;
+    }
+    g.innerHTML = liste.map(c => {
+      const s = Math.round(Number(c.score) || 0), n = c.noten || {}, st = c.status || "neu";
+      const noten = [["Hook", n.hook], ["Flow", n.flow], ["Value", n.value], ["Trend", n.trend]].filter(x => x[1]).map(x => `<span>${x[0]}<b>${esc(x[1])}</b></span>`).join("");
+      const vs = typeof c.vorschau === "string" && /^vorschau\/[A-Za-z0-9._-]+\.jpg$/.test(c.vorschau) ? c.vorschau : null;
+      const bild = (vs ? `<img src="${esc(vs)}" alt="" loading="lazy">` : `<div class="ph">${esc((c.hook || c.titel || "").slice(0, 60))}</div>`) + `<span class="ecke e1"></span><span class="ecke e2"></span><span class="ecke e3"></span><span class="ecke e4"></span>`;
+      const knopf = st === "neu"
+        ? `<button type="button" class="btn linie klein" data-a="gepostet">Gepostet</button><button type="button" class="ghost" data-a="verworfen">Verwerfen <span class="chev">›</span></button>`
+        : `<button type="button" class="ghost" data-a="neu">Zurück zu bereit <span class="chev">›</span></button>`;
+      const geplant = st === "eingeplant" && c.geplant_fuer ? `<div class="mono" style="color:var(--orange-500);margin-top:8px">[ Eingeplant · ${esc(zeit(c.geplant_fuer))} ]</div>` : "";
+      return `<article class="karte ${esc(st)}" data-id="${esc(c._id)}">
+        <div class="bild">${bild}</div>
+        <div>
+          <div class="score-z"><span class="score ${scoreKl(s)}">${s}</span><span class="mono von">/ 100</span><span class="klammer" style="margin-left:auto">[ Clip ${zwei(c.nr ?? 0)} ]</span></div>
+          <h3>${esc(c.titel || "Ohne Titel")}</h3>
+          <div class="meta mono">${esc(c.folge || "")} · ${dauer(c.dauer || (c.ende - c.start))}</div>
+          <div class="noten mono">${noten}</div>${geplant}
+          ${c.grund ? `<details class="mehr"><summary>Warum dieser Clip <span class="chev">›</span></summary><p>${esc(c.grund)}</p></details>` : ""}
+          <div class="aktionen"><button type="button" class="btn klein" data-a="kopieren">Text kopieren</button>${knopf}<span class="ok-text mono"></span></div>
+        </div>
+      </article>`;
+    }).join("");
+  }
+  $("#clip-grid").addEventListener("click", async e => {
+    if (e.target.closest("[data-start]")) { starteEinrichtung(); return; }
+    const b = e.target.closest("button[data-a]"); if (!b) return;
+    const card = b.closest(".karte"); const c = S.clips.find(x => x._id === card.dataset.id); if (!c) return;
+    const a = b.dataset.a;
+    if (a === "kopieren") {
+      const text = beschreibung(c);
+      try { await navigator.clipboard.writeText(text); const o = card.querySelector(".ok-text"); o.textContent = "Kopiert"; setTimeout(() => { o.textContent = ""; }, 1800); }
+      catch (err) { if (!card.querySelector(".copybox")) card.insertAdjacentHTML("beforeend", `<div class="copybox">${esc(text)}</div>`); }
+      return;
+    }
+    if (!S.db) { toast("Speichern geht gerade nicht"); return; }
+    b.disabled = true;
+    try { await S.db.doc("clips/" + c._id).update({ status: a, geaendert: new Date().toISOString() }); toast(a === "gepostet" ? "Als gepostet markiert" : a === "verworfen" ? "Verworfen" : "Wieder bereit"); }
+    catch (err) { toast("Konnte nicht speichern"); b.disabled = false; }
+  });
+
+  // ---------- Neue Folge
+  const ST = { neu: "Neu", laeuft: "Läuft", fertig: "Fertig", fehler: "Fehler" };
+  function zeichneAuftraege() {
+    $("#a-label").textContent = S.konto ? `[ YouTube-Link für ${kontoName(S.konto)} ]` : "[ YouTube-Link ]";
+    const anz = $("#a-anzahl"); if (document.activeElement !== anz) anz.value = E().auswahl.clips_pro_folge;
+    const liste = S.auftraege.filter(a => a.konto === S.konto).sort((a, b) => String(b.erstellt || "").localeCompare(String(a.erstellt || "")));
+    const offen = liste.filter(a => a.status === "neu" || a.status === "laeuft").length;
+    $("#zahl-folge").textContent = offen ? "[" + offen + "]" : "";
+    const el = $("#auftrag-liste");
+    if (!liste.length) { el.innerHTML = ""; return; }
+    el.innerHTML = `<span class="eyebrow">// Aufträge</span>` + liste.map(a => {
+      const st = a.status || "neu", fp = Math.max(0, Math.min(100, Number(a.fortschritt) || 0));
+      return `<div class="auftrag" data-id="${esc(a._id)}">
+        <div class="z1"><h4>${esc(a.folge || "Folge ohne Namen")}</h4><span class="badge ${esc(st)}">${ST[st] || esc(st)}</span></div>
+        <div class="url mono">${esc(a.url || "")}</div>
+        ${st === "laeuft" ? `<div class="balken">${Array.from({ length: 10 }, (_, i) => `<span class="${i < Math.round(fp / 10) ? "an" : ""}"></span>`).join("")}</div>` : ""}
+        <div class="klammer">[ ${zeit(a.erstellt)}${a.schritt ? " · " + esc(a.schritt) : ""}${st === "fertig" && a.clips_anzahl ? " · " + esc(a.clips_anzahl) + " Clips" : ""} ]</div>
+        ${a.fehler ? `<p style="color:var(--stop);font-size:15px">${esc(a.fehler)}</p>` : ""}
+        ${st === "neu" || st === "fehler" ? `<div><button type="button" class="ghost" data-a="loeschen">Auftrag entfernen <span class="chev">›</span></button></div>` : ""}
+      </div>`;
+    }).join("");
+  }
+  $("#auftrag-liste").addEventListener("click", async e => {
+    const b = e.target.closest("button[data-a='loeschen']"); if (!b || !S.db) return;
+    b.disabled = true;
+    try { await S.db.doc("auftraege/" + b.closest(".auftrag").dataset.id).delete(); toast("Auftrag entfernt"); } catch (err) { toast("Konnte nicht entfernen"); b.disabled = false; }
+  });
+  $("#auftrag-form").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (!S.konto) { starteEinrichtung(); return; }
+    if (!S.db) { toast("Speichern geht gerade nicht"); return; }
+    const links = $("#a-links").value.split(/\s+/).map(x => x.trim()).filter(x => /^https?:\/\//i.test(x));
+    if (!links.length) { toast("Bitte einen Link mit https:// einfügen"); return; }
+    const folge = $("#a-folge").value.trim(), anzahl = Math.max(1, Math.min(30, parseInt($("#a-anzahl").value, 10) || 10)), hinweis = $("#a-hinweis").value.trim();
+    const btn = $("#a-senden"); btn.disabled = true;
+    try {
+      for (let i = 0; i < links.length; i++) {
+        const name = folge ? (links.length > 1 ? `${folge} (${i + 1})` : folge) : "";
+        await S.db.collection("auftraege").add({ konto: S.konto, url: links[i], folge: name, anzahl, hinweis, status: "neu", erstellt: new Date().toISOString() });
+      }
+      $("#a-links").value = ""; $("#a-folge").value = ""; $("#a-hinweis").value = "";
+      $("#a-ok").textContent = (links.length > 1 ? links.length + " Aufträge angelegt" : "Auftrag angelegt") + ". Jetzt Claude schreiben: Clips machen";
+      setTimeout(() => $("#a-ok").textContent = "", 6000);
+    } catch (err) { toast(err && err.code === "quota_exceeded" ? "Speicher voll" : "Konnte nicht speichern"); }
+    btn.disabled = false;
+  });
+
+  // ---------- Einstellungen
+  let felder = [];
+  function feldHtml(f) {
+    felder.push(f); const i = felder.length - 1, id = "f" + i, v = f.k ? holen(E(), f.k) : null;
+    const hilfe = f.h ? `<span class="hilfe">${esc(f.h)}</span>` : "";
+    let c = "";
+    switch (f.t) {
+      case "fest": c = `<span class="klammer">[ ${esc(f.wert)} ]</span>`; break;
+      case "zahl": c = `<div class="regler"><input type="number" class="zahlfeld" id="${id}" data-i="${i}" data-k="${f.k}" data-t="zahl" min="${f.min}" max="${f.max}" value="${esc(v)}">${f.einheit ? `<span class="klammer">${esc(f.einheit)}</span>` : ""}</div>`; break;
+      case "text": c = `<input type="text" id="${id}" data-k="${f.k}" data-t="text" value="${esc(v)}" placeholder="${esc(f.ph || "")}">`; break;
+      case "lang": c = `<textarea id="${id}" data-k="${f.k}" data-t="text" rows="2" placeholder="${esc(f.ph || "")}">${esc(v)}</textarea>`; break;
+      case "zeit": c = `<input type="time" id="${id}" data-k="${f.k}" data-t="text" value="${esc(v)}" style="max-width:150px">`; break;
+      case "auswahl": c = `<select id="${id}" data-k="${f.k}" data-t="text">${f.opt.map(o => `<option value="${esc(o[0])}"${o[0] === v ? " selected" : ""}>${esc(o[1])}</option>`).join("")}</select>`; break;
+      case "seg": c = `<div class="seg" role="group">${f.opt.map(o => `<button type="button" class="chip" data-k="${f.k}" data-t="seg" data-v="${esc(JSON.stringify(o[0]))}" aria-pressed="${String(o[0] === v)}"><span class="box"></span>${esc(o[1])}</button>`).join("")}</div>`; break;
+      case "schalter": c = `<button type="button" class="schalter" role="switch" id="${id}" data-k="${f.k}" data-t="schalter" aria-checked="${String(!!v)}"><span class="box"></span><span class="an">${v ? "An" : "Aus"}</span></button>`; break;
+      case "regler": c = `<div class="regler"><input type="range" id="${id}" data-i="${i}" data-k="${f.k}" data-t="regler" min="${f.min}" max="${f.max}" step="${f.step}" value="${esc(v)}"><output class="mono" for="${id}">${esc(f.fmt(v))}</output></div>`; break;
+      case "farbe": c = `<div class="farbe"><input type="color" id="${id}" data-k="${f.k}" data-t="text" value="${esc(v)}"><span class="klammer">${esc(String(v).toUpperCase())}</span></div>`; break;
+      case "mehrfach": c = `<div class="seg">${f.opt.map(o => `<button type="button" class="chip" data-k="${f.k}" data-t="mehrfach" data-v="${esc(o)}" aria-pressed="${String((v || []).includes(o))}"><span class="box"></span>${esc(o)}</button>`).join("")}</div>`; break;
+    }
+    const lbl = ["seg", "mehrfach", "fest", "schalter"].includes(f.t) ? `<span class="l">${esc(f.l)}</span>` : `<label class="l" for="${id}">${esc(f.l)}</label>`;
+    return `<div class="kv">${lbl}<div>${c}</div>${hilfe}</div>`;
+  }
+  const blockHtml = ([titel, zusatz, fs], nr) => `<div class="block"><div class="block-kopf"><span class="klammer" style="margin-left:0">${zwei(nr)}</span><h3>${esc(titel)}.</h3><span class="klammer">[ ${esc(zusatz)} ]</span></div>${fs.map(feldHtml).join("")}</div>`;
+  let feinOffen = false;
+  function zeichneEinstellungen() {
+    const el = $("#einst-inhalt");
+    if (!S.konto) { el.innerHTML = `<div class="leer"><h3>Noch kein Konto.</h3><div><button type="button" class="btn" data-start="1">Einrichtung starten</button></div></div>`; $("#s-vorschau").innerHTML = ""; return; }
+    felder = [];
+    el.innerHTML = GRUND.map((b, i) => blockHtml(b, i + 1)).join("")
+      + `<details class="erweitert"${feinOffen ? " open" : ""}><summary><span class="sq"></span>Feineinstellungen <span class="chev">›</span></summary><div class="innen">${FEIN.map((b, i) => blockHtml(b, i + 4)).join("")}</div></details>`
+      + `<div style="margin-top:18px"><button type="button" class="ghost" id="konto-weg">${esc(kontoName(S.konto))} aus der Liste entfernen <span class="chev">›</span></button></div>`;
+    const v = $("#s-vorschau"); v.innerHTML = phoneHtml(); zeichneVorschau(v, E().stil);
+    zeigeGespeichert();
+  }
+  function zeigeGespeichert() {
+    const el = $("#gespeichert"), t = S.gespeichert[S.konto];
+    el.className = "mono gespeichert" + (t === "ok" ? " ok" : "");
+    el.textContent = t === "laeuft" ? "[ Speichere ]" : t === "ok" ? "[ Gespeichert ]" : t === "fehler" ? "[ Nicht gespeichert ]" : (E().aktualisiert ? "[ Stand " + zeit(E().aktualisiert) + " ]" : "");
+  }
+  const ein = $("#einst-inhalt");
+  ein.addEventListener("toggle", e => { if (e.target.matches("details.erweitert")) feinOffen = e.target.open; }, true);
+  ein.addEventListener("input", e => {
+    const el = e.target; if (!el.dataset.k) return;
+    let v = el.value;
+    if (el.dataset.t === "zahl") { const n = parseFloat(el.value); if (isNaN(n)) return; v = Math.max(+el.min, Math.min(+el.max, n)); }
+    if (el.dataset.t === "regler") { v = parseFloat(el.value); el.nextElementSibling.textContent = felder[+el.dataset.i].fmt(v); }
+    if (el.type === "color") el.nextElementSibling.textContent = v.toUpperCase();
+    setzen(E(), el.dataset.k, v);
+    if (el.dataset.k === "name") { const k = S.konten.find(x => x.id === S.konto); if (k) { k.name = v; zeichneKonten(); kontenSpeichern(); } }
+    zeichneVorschau($("#s-vorschau"), E().stil); planeSpeichern();
+  });
+  ein.addEventListener("click", async e => {
+    if (e.target.closest("[data-start]")) { starteEinrichtung(); return; }
+    if (e.target.closest("#konto-weg")) {
+      if (!S.db) return;
+      const liste = S.konten.filter(k => k.id !== S.konto);
+      try { await S.db.doc("system/konten").set({ liste }); S.konten = liste; S.konto = liste[0] ? liste[0].id : null; allesZeichnen(); toast("Konto entfernt"); } catch (err) { toast("Konnte nicht entfernen"); }
+      return;
+    }
+    const b = e.target.closest("button[data-k]"); if (!b) return;
+    const d = E(), k = b.dataset.k;
+    if (b.dataset.t === "seg") { setzen(d, k, JSON.parse(b.dataset.v)); b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); }
+    else if (b.dataset.t === "schalter") { const nv = !holen(d, k); setzen(d, k, nv); b.setAttribute("aria-checked", String(nv)); b.querySelector(".an").textContent = nv ? "An" : "Aus"; }
+    else if (b.dataset.t === "mehrfach") { const arr = (holen(d, k) || []).slice(), v = b.dataset.v, i = arr.indexOf(v); if (i >= 0) arr.splice(i, 1); else arr.push(v); setzen(d, k, arr); b.setAttribute("aria-pressed", String(i < 0)); }
+    zeichneVorschau($("#s-vorschau"), d.stil); planeSpeichern();
+  });
+  let kontenT; function kontenSpeichern() { clearTimeout(kontenT); kontenT = setTimeout(async () => { if (S.db) { try { await S.db.doc("system/konten").set({ liste: S.konten }); } catch (e) {} } }, 900); }
+  const speicherT = {}, laeuft = {}, nochmal = {};
+  function planeSpeichern() { const k = S.konto; if (!k) return; S.gespeichert[k] = "laeuft"; zeigeGespeichert(); clearTimeout(speicherT[k]); speicherT[k] = setTimeout(() => speichern(k), 700); }
+  async function speichern(k) {
+    if (!S.db) { S.gespeichert[k] = "fehler"; zeigeGespeichert(); return; }
+    if (laeuft[k]) { nochmal[k] = true; return; }
+    laeuft[k] = true;
+    const d = JSON.parse(JSON.stringify(S.einst[k])); d.konto = k; d.aktualisiert = new Date().toISOString();
+    try { await S.db.doc("einstellungen/" + k).set(d); S.einst[k].aktualisiert = d.aktualisiert; S.gespeichert[k] = "ok"; } catch (e) { S.gespeichert[k] = "fehler"; }
+    laeuft[k] = false; if (k === S.konto) zeigeGespeichert();
+    if (nochmal[k]) { nochmal[k] = false; speichern(k); }
+  }
+
+  // ---------- Status und Gesamtbild
+  function zeichneStatus() {
+    const s = S.status, el = $("#status"), t = $("#status-text");
+    el.className = "status mono";
+    if (!S.db) { t.textContent = S.dbFertig ? "Offline" : "Verbinde"; return; }
+    if (!s || !s.zuletzt) { t.innerHTML = "[ Mac<span class=\"lang\"> · noch kein Abgleich</span> ]"; return; }
+    const alt = (Date.now() - new Date(s.zuletzt).getTime()) > 36 * 3600 * 1000;
+    el.classList.add(alt ? "alt" : "an");
+    t.innerHTML = `[ Mac · ${esc(s.text || "bereit")}<span class="lang"> · ${esc(zeit(s.zuletzt))}</span> ]`;
+  }
+  function allesZeichnen() {
+    if (S.konto && !S.konten.some(k => k.id === S.konto)) S.konto = S.konten[0] ? S.konten[0].id : null;
+    zeichneKonten(); zeichneClips(); zeichneAuftraege(); zeichneEinstellungen(); zeichneStatus();
+  }
+  allesZeichnen(); zeigeView(location.hash.slice(1));
+
+  // ---------- Datenbank
+  (async () => {
+    let db = null;
+    const timer = setTimeout(() => { if (!S.geladen) banner("Die gespeicherten Daten sind noch nicht erreichbar."); }, 10000);
+    try { db = await window.claude?.use?.("db"); } catch (e) { db = null; }
+    S.dbFertig = true;
+    if (!db) { clearTimeout(timer); banner("Speichern ist hier nicht möglich. Öffne das Clip-Studio angemeldet in Claude."); zeichneStatus(); return; }
+    S.db = db; zeichneStatus();
+    let ersteKonten = true;
+    const fertig = () => { if (!S.geladen) { S.geladen = true; clearTimeout(timer); banner(""); } };
+    const subs = {};
+    function abonniere() {
+      S.konten.forEach(k => {
+        if (subs[k.id]) return;
+        subs[k.id] = db.doc("einstellungen/" + k.id).onSnapshot(snap => {
+          fertig();
+          if (!snap.exists || laeuft[k.id] || S.gespeichert[k.id] === "laeuft") return;
+          S.einst[k.id] = tief(standard(k.id, k.name), snap.data());
+          if (k.id === S.konto) { if (!(document.activeElement && ein.contains(document.activeElement))) zeichneEinstellungen(); zeichneAuftraege(); zeichneClips(); }
+        }, () => fertig());
+      });
+    }
+    db.doc("system/konten").onSnapshot(snap => {
+      fertig();
+      S.konten = snap.exists && Array.isArray(snap.data().liste) ? snap.data().liste.filter(k => k && k.id) : [];
+      if (!S.konto) S.konto = (S.konten.find(k => k.id === gemerkt) || S.konten[0] || {}).id || null;
+      abonniere(); allesZeichnen();
+      if (ersteKonten) { ersteKonten = false; if (!S.konten.length && !S.setup) starteEinrichtung(); }
+    }, () => fertig());
+    db.collection("clips").onSnapshot(snap => { fertig(); S.clips = snap.docs.map(d => Object.assign({ _id: d.id }, d.data())); zeichneClips(); }, () => { fertig(); banner("Die Clips konnten nicht geladen werden."); });
+    db.collection("auftraege").onSnapshot(snap => { fertig(); S.auftraege = snap.docs.map(d => Object.assign({ _id: d.id }, d.data())); zeichneAuftraege(); }, () => fertig());
+    db.doc("system/status").onSnapshot(snap => { fertig(); S.status = snap.exists ? snap.data() : null; zeichneStatus(); }, () => fertig());
+  })();
+})();
+</script>
+</body>
+</html>
