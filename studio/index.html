@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clip-Studio</title>
-<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="icon" href="logo-klein.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Bebas+Neue&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
@@ -55,15 +55,9 @@ header.kopf { position: sticky; top: 0; z-index: 10; }
 .leiste .in { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 .zeile { height: 58px; display: flex; align-items: center; gap: 14px; }
 .marke { display: flex; align-items: center; gap: 10px; margin-right: auto; text-decoration: none; color: var(--text-primary); white-space: nowrap; }
-.marke .krabbe { width: 40px; height: 40px; display: block; flex: 0 0 auto; margin: -4px 0; }
-.kr-o { fill: var(--orange-500); } .kr-d { fill: var(--olive-900); } .kr-c { fill: var(--cream-100); }
-.kr-bein { stroke: var(--orange-500); stroke-width: 3.2; stroke-linecap: round; fill: none; }
-.kr-ko, .kr-ku { transform-box: view-box; transform-origin: 0 0; animation: kr-o 3.2s infinite; }
-.kr-ku { animation-name: kr-u; }
-@keyframes kr-o { 0%, 70%, 100% { transform: rotate(-28deg); } 78%, 86% { transform: rotate(0); } }
-@keyframes kr-u { 0%, 70%, 100% { transform: rotate(28deg); } 78%, 86% { transform: rotate(0); } }
-.marke:hover .kr-ko, .marke:hover .kr-ku { animation-duration: .5s; }
-@media (prefers-reduced-motion: reduce) { .kr-ko, .kr-ku { animation: none; } }
+.marke .krabbe { width: 50px; height: 43px; display: block; flex: 0 0 auto; margin: -6px 0 -4px; }
+.held { width: 100%; max-width: 260px; display: block; }
+.leer .held { max-width: 170px; }
 .marke b { font: 700 22px/1 var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
 .status { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); }
 .status .sq { background: var(--text-muted); }
@@ -253,6 +247,7 @@ details.erweitert .block { border-color: transparent; }
   .einricht, .einst, .folge { grid-template-columns: 1fr; }
   .vorschau { position: static; order: -1; }
   .phone { max-width: 170px; }
+  .vorschau .held { max-width: 190px; }
 }
 @media (max-width: 520px) {
   .wrap { padding: 0 16px 72px; }
@@ -278,7 +273,7 @@ details.erweitert .block { border-color: transparent; }
   <div class="ticker mono"><div class="in"><span>Clippen. Bewerten. Planen.</span><span class="rechts"><span class="sq"></span>Läuft auf deinem eigenen Mac</span></div></div>
   <div class="leiste"><div class="in">
     <div class="zeile">
-      <a class="marke" href="#clips"><svg class="krabbe" viewBox="0 0 64 64" aria-hidden="true"> <path class="kr-bein" d="M19 44l-8 5M18 40l-9 2M21 47l-5 8M45 44l8 5M46 40l9 2M43 47l5 8"/> <path class="kr-bein" d="M20 36l-8-9M44 36l8-9"/> <g transform="translate(11 24) rotate(-125)"> <path class="kr-o kr-ko" d="M0 0L10 0A10 10 0 0 0-10 0Z" transform="rotate(-28)"/> <path class="kr-o kr-ku" d="M0 0L10 0A10 10 0 0 1-10 0Z" transform="rotate(28)"/> </g> <g transform="translate(53 24) rotate(-55)"> <path class="kr-o kr-ko" d="M0 0L10 0A10 10 0 0 0-10 0Z" transform="rotate(-28)"/> <path class="kr-o kr-ku" d="M0 0L10 0A10 10 0 0 1-10 0Z" transform="rotate(28)"/> </g> <path class="kr-bein" d="M27 31l-3-11M37 31l3-11"/> <circle class="kr-o" cx="23.5" cy="17" r="4.6"/><circle class="kr-o" cx="40.5" cy="17" r="4.6"/> <path class="kr-d" stroke="#EFEADD" stroke-width="1.5" stroke-linejoin="round" d="M15.5 13.5h14l-1.2 6.2c-.4 1.8-1.8 2.8-3.6 2.8h-4.6c-1.8 0-3.2-1-3.6-2.8z"/> <path class="kr-d" stroke="#EFEADD" stroke-width="1.5" stroke-linejoin="round" d="M34.5 13.5h14l-1.2 6.2c-.4 1.8-1.8 2.8-3.6 2.8h-4.6c-1.8 0-3.2-1-3.6-2.8z"/> <path d="M29.4 15.2q2.6-1.6 5.2 0" stroke="#EFEADD" stroke-width="1.5" fill="none"/> <path d="M18 15.6l3 0M37 15.6l3 0" stroke="#EFEADD" stroke-width="1.4" stroke-linecap="round" opacity=".85"/> <path class="kr-o" d="M14 41c0-8.5 8-13 18-13s18 4.5 18 13c0 3.5-2.5 6-6 6H20c-3.5 0-6-2.5-6-6z"/> <rect class="kr-d" x="21" y="35" width="3" height="3"/><rect class="kr-d" x="27" y="35" width="3" height="3"/><rect class="kr-d" x="34" y="35" width="3" height="3"/><rect class="kr-d" x="40" y="35" width="3" height="3"/> <path d="M27.5 42q5 4 9.5-.5" stroke="#1D2418" stroke-width="2" fill="none" stroke-linecap="round"/> </svg><b>Clip-Studio</b></a>
+      <a class="marke" href="#clips"><img class="krabbe" src="logo-klein.svg" alt=""><b>Clip-Studio</b></a>
       <span class="status mono" id="status"><span class="sq"></span><span id="status-text">Verbinde</span></span>
     </div>
     <nav class="kompass" aria-label="Bereiche">
@@ -553,7 +548,7 @@ details.erweitert .block { border-color: transparent; }
     h += `<div class="weiter"><button type="button" class="btn" id="s-weiter">${n < 4 ? "Weiter" : "Einrichtung abschließen"}</button>${n > 1 ? `<button type="button" class="ghost" id="s-zurueck"><span class="chev">‹</span> Zurück</button>` : S.konten.length ? `<button type="button" class="ghost" id="s-abbruch">Abbrechen <span class="chev">›</span></button>` : ""}</div>`;
     $("#e-inhalt").innerHTML = h;
     const v = $("#e-vorschau");
-    if (n === 2) { v.hidden = false; v.innerHTML = phoneHtml(); zeichneVorschau(v, d.stil); } else { v.hidden = true; v.innerHTML = ""; }
+    if (n === 2) { v.hidden = false; v.innerHTML = phoneHtml(); zeichneVorschau(v, d.stil); } else { v.hidden = false; v.innerHTML = `<img class="held" src="logo.svg" alt="">`; }
     if (n === 1) setTimeout(() => { const i = $("#s-name"); if (i && !("ontouchstart" in window)) i.focus(); }, 30);
   }
   function setupLesen() {
@@ -614,11 +609,11 @@ details.erweitert .block { border-color: transparent; }
     $("#zahl-clips").textContent = bereit.length ? "[" + bereit.length + "]" : "";
     const liste = (S.filter === "alle" ? alle : alle.filter(c => (c.status || "neu") === S.filter)).slice().sort((a, b) => (b.score || 0) - (a.score || 0));
     const g = $("#clip-grid");
-    if (!S.konto) { g.innerHTML = `<div class="leer"><span class="eyebrow">// Start</span><h3>Leg dein erstes Konto an.</h3><p class="lead">Die Einrichtung dauert eine Minute.</p><div><button type="button" class="btn" data-start="1">Einrichtung starten</button></div></div>`; return; }
+    if (!S.konto) { g.innerHTML = `<div class="leer"><img class="held" src="logo.svg" alt=""><span class="eyebrow">// Start</span><h3>Leg dein erstes Konto an.</h3><p class="lead">Die Einrichtung dauert eine Minute.</p><div><button type="button" class="btn" data-start="1">Einrichtung starten</button></div></div>`; return; }
     if (!liste.length) {
       g.innerHTML = alle.length
         ? `<div class="leer"><h3>Hier ist gerade nichts.</h3><p class="lead">Schau unter „Alle“.</p></div>`
-        : `<div class="leer"><span class="eyebrow">// Noch leer</span><h3>Noch keine Clips.</h3><p class="lead">Füg unter „Neue Folge“ einen YouTube-Link ein und schreib Claude „Clips machen“. Hier stehen dann alle Clips mit Score und Begründung.</p><div><a class="btn" href="#folge">Neue Folge</a></div></div>`;
+        : `<div class="leer"><img class="held" src="logo.svg" alt=""><span class="eyebrow">// Noch leer</span><h3>Noch keine Clips.</h3><p class="lead">Füg unter „Neue Folge“ einen YouTube-Link ein und schreib Claude „Clips machen“. Hier stehen dann alle Clips mit Score und Begründung.</p><div><a class="btn" href="#folge">Neue Folge</a></div></div>`;
       return;
     }
     g.innerHTML = liste.map(c => {

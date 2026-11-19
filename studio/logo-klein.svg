@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 4 120 102" role="img" aria-label="Clip-Studio Krabbe">
+  <style>
+    .kr-o{fill:#F0A31B}.kr-o2{fill:#D28E14}.kr-hl{fill:#F7C25E}.kr-d{fill:#1D2418}.kr-c{fill:#EFEADD}
+    .kr-l{stroke:#F0A31B;stroke-width:4.4;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    .kr-l2{stroke:#D28E14;stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    .kr-tv{transform-box:view-box}
+    .kr-koerper{animation:kr-hop 1.6s ease-in-out infinite}
+    .kr-bein-a{transform-origin:40px 78px;animation:kr-tap 0.8s ease-in-out infinite}
+    .kr-bein-b{transform-origin:80px 78px;animation:kr-tap 0.8s ease-in-out infinite reverse}
+    .kr-stiel-l{transform-origin:53px 54px;animation:kr-wipp 3.2s ease-in-out infinite}
+    .kr-stiel-r{transform-origin:67px 54px;animation:kr-wipp 3.2s ease-in-out infinite reverse}
+    .kr-glanz{animation:kr-glanz 4.8s ease-in-out infinite}
+    .kr-arm-l{transform-origin:38px 70px;animation:kr-arm-l 4.8s ease-in-out infinite}
+    .kr-arm-r{transform-origin:82px 70px;animation:kr-arm-r 4.8s ease-in-out infinite}
+    .kr-ko{transform-box:view-box;transform-origin:0 0;animation:kr-ko 4.8s infinite}
+    .kr-ku{transform-box:view-box;transform-origin:0 0;animation:kr-ku 4.8s infinite}
+    .kr-film{animation:kr-film 4.8s linear infinite}
+    .kr-stueck-l{transform-box:fill-box;transform-origin:50% 50%;animation:kr-fall-l 4.8s ease-in infinite}
+    .kr-stueck-r{transform-box:fill-box;transform-origin:50% 50%;animation:kr-fall-r 4.8s ease-in infinite}
+    .kr-funke{opacity:0;animation:kr-funke 4.8s infinite}
+    @keyframes kr-hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.6px)}}
+    @keyframes kr-tap{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+    @keyframes kr-wipp{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+    @keyframes kr-glanz{0%,55%{transform:translateX(-30px)}75%,100%{transform:translateX(34px)}}
+    @keyframes kr-arm-l{0%,60%,100%{transform:rotate(0)}66%,84%{transform:rotate(9deg)}}
+    @keyframes kr-arm-r{0%,60%,100%{transform:rotate(0)}66%,84%{transform:rotate(-9deg)}}
+    @keyframes kr-ko{0%,64%,100%{transform:rotate(-32deg)}69%{transform:rotate(0)}73%{transform:rotate(-26deg)}78%,84%{transform:rotate(0)}90%{transform:rotate(-32deg)}}
+    @keyframes kr-ku{0%,64%,100%{transform:rotate(32deg)}69%{transform:rotate(0)}73%{transform:rotate(26deg)}78%,84%{transform:rotate(0)}90%{transform:rotate(32deg)}}
+    @keyframes kr-film{0%{transform:translateX(0)}100%{transform:translateX(-16px)}}
+    @keyframes kr-fall-l{0%,78%{transform:translate(0,0) rotate(0);opacity:0}79%{opacity:1}100%{transform:translate(-14px,46px) rotate(-120deg);opacity:0}}
+    @keyframes kr-fall-r{0%,78%{transform:translate(0,0) rotate(0);opacity:0}79%{opacity:1}100%{transform:translate(14px,46px) rotate(140deg);opacity:0}}
+    @keyframes kr-funke{0%,77%{opacity:0}79%{opacity:1}86%,100%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  </style>
+  <defs>
+    <clipPath id="kr-glaeser"><path d="M37.5 31.5h19l-1.6 8.4c-.5 2.4-2.4 3.8-4.9 3.8h-6c-2.5 0-4.4-1.4-4.9-3.8z M63.5 31.5h19l-1.6 8.4c-.5 2.4-2.4 3.8-4.9 3.8h-6c-2.5 0-4.4-1.4-4.9-3.8z"/></clipPath>
+  </defs>
+
+  <g class="kr-koerper">
+    <!-- Beine, je drei pro Seite, zweigliedrig -->
+    <g class="kr-bein-a">
+      <path class="kr-l2" d="M40 80l-12 3-6 10"/>
+      <path class="kr-l" d="M38 76l-13-2-8 8"/>
+      <path class="kr-l" d="M43 83l-8 7-2 10"/>
+    </g>
+    <g class="kr-bein-b">
+      <path class="kr-l2" d="M80 80l12 3 6 10"/>
+      <path class="kr-l" d="M82 76l13-2 8 8"/>
+      <path class="kr-l" d="M77 83l8 7 2 10"/>
+    </g>
+
+    <!-- Arme mit Gelenk und Scheren-Zangen -->
+    <g class="kr-arm-l">
+      <path class="kr-l" d="M38 70l-14-10-11-30"/>
+      <circle class="kr-o2" cx="24" cy="60" r="3"/>
+      <g transform="translate(13 18.5)">
+        <path class="kr-o kr-ko" d="M0 0L11.5 0A11.5 11.5 0 0 0-11.5 0Z" transform="rotate(-32)"/>
+        <path class="kr-o2 kr-ku" d="M0 0L11.5 0A11.5 11.5 0 0 1-11.5 0Z" transform="rotate(32)"/>
+        <circle class="kr-c" r="2.2"/><circle class="kr-d" r=".9"/>
+      </g>
+    </g>
+    <g class="kr-arm-r">
+      <path class="kr-l" d="M82 70l14-10 11-30"/>
+      <circle class="kr-o2" cx="96" cy="60" r="3"/>
+      <g transform="translate(107 18.5) rotate(180)">
+        <path class="kr-o kr-ko" d="M0 0L11.5 0A11.5 11.5 0 0 0-11.5 0Z" transform="rotate(-32)"/>
+        <path class="kr-o2 kr-ku" d="M0 0L11.5 0A11.5 11.5 0 0 1-11.5 0Z" transform="rotate(32)"/>
+        <circle class="kr-c" r="2.2"/><circle class="kr-d" r=".9"/>
+      </g>
+    </g>
+
+    <!-- Augenstiele -->
+    <path class="kr-l kr-stiel-l" d="M53 54l-3-13"/>
+    <path class="kr-l kr-stiel-r" d="M67 54l3-13"/>
+
+    <!-- Panzer mit Schatten, Glanz und Filmloechern -->
+    <path class="kr-o" d="M28 72c0-13 13-21 32-21s32 8 32 21c0 6-4.5 10-10.5 10h-43C32.5 82 28 78 28 72z"/>
+    <path class="kr-o2" d="M30.5 76.5c1.8 3.4 5 5.5 8.5 5.5h42c3.5 0 6.7-2.1 8.5-5.5z"/>
+    <ellipse class="kr-hl" cx="48" cy="58.5" rx="11" ry="3.6" transform="rotate(-12 48 58.5)" opacity=".75"/>
+    <g class="kr-d">
+      <rect x="40" y="65" width="4.4" height="3.6" rx=".6"/><rect x="48.6" y="65" width="4.4" height="3.6" rx=".6"/><rect x="57.2" y="65" width="4.4" height="3.6" rx=".6"/><rect x="65.8" y="65" width="4.4" height="3.6" rx=".6"/><rect x="74.4" y="65" width="4.4" height="3.6" rx=".6"/>
+    </g>
+    <path d="M53 73.5q7 5.5 14-.5" stroke="#1D2418" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+
+    <!-- Sonnenbrille mit wanderndem Glanz -->
+    <g>
+      <path class="kr-d" stroke="#EFEADD" stroke-width="1.8" stroke-linejoin="round" d="M37.5 31.5h19l-1.6 8.4c-.5 2.4-2.4 3.8-4.9 3.8h-6c-2.5 0-4.4-1.4-4.9-3.8z"/>
+      <path class="kr-d" stroke="#EFEADD" stroke-width="1.8" stroke-linejoin="round" d="M63.5 31.5h19l-1.6 8.4c-.5 2.4-2.4 3.8-4.9 3.8h-6c-2.5 0-4.4-1.4-4.9-3.8z"/>
+      <path d="M56.5 33.6q3.5-2 7 0" stroke="#EFEADD" stroke-width="1.8" fill="none"/>
+      <g clip-path="url(#kr-glaeser)"><g class="kr-glanz"><path d="M50 29l6 0-12 18-6 0z" fill="#EFEADD" opacity=".55"/><path d="M58 29l2.5 0-12 18-2.5 0z" fill="#EFEADD" opacity=".35"/></g></g>
+    </g>
+  </g>
+</svg>
