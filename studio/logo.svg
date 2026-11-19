@@ -1,10 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Clip-Studio">
-  <defs>
-    <mask id="schnitt"><rect width="32" height="32" fill="#fff"/><line x1="3" y1="24.6" x2="29" y2="8.2" stroke="#000" stroke-width="2.1"/></mask>
-  </defs>
-  <g mask="url(#schnitt)">
-    <rect x="9.25" y="4" width="13.5" height="24" fill="#F0A31B"/>
-    <path d="M13.9 11.4v9.2l7.1-4.6z" fill="#1D2418"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Clip-Studio">
+  <style>
+    .o{fill:#F0A31B}.d{fill:#1D2418}.c{fill:#EFEADD}
+    .bein{stroke:#F0A31B;stroke-width:3.2;stroke-linecap:round;fill:none}
+    .kiefer-o{transform-box:view-box;transform-origin:0 0;animation:schnipp-o 3.2s infinite}
+    .kiefer-u{transform-box:view-box;transform-origin:0 0;animation:schnipp-u 3.2s infinite}
+    
+    @keyframes schnipp-o{0%,70%,100%{transform:rotate(-28deg)}78%,86%{transform:rotate(0)}}
+    @keyframes schnipp-u{0%,70%,100%{transform:rotate(28deg)}78%,86%{transform:rotate(0)}}
+    
+    @media (prefers-reduced-motion:reduce){.kiefer-o,.kiefer-u{animation:none}}
+  </style>
+  <!-- Beine -->
+  <path class="bein" d="M19 44l-8 5M18 40l-9 2M21 47l-5 8M45 44l8 5M46 40l9 2M43 47l5 8"/>
+  <!-- Arme -->
+  <path class="bein" d="M20 36l-8-9M44 36l8-9"/>
+  <!-- Zangen als Scheren: zwei Kiefer, die zuschnappen -->
+  <g transform="translate(11 24) rotate(-125)">
+    <path class="o kiefer-o" d="M0 0L10 0A10 10 0 0 0-10 0Z" transform="rotate(-28)"/>
+    <path class="o kiefer-u" d="M0 0L10 0A10 10 0 0 1-10 0Z" transform="rotate(28)"/>
   </g>
-  <path d="M4.5 6V2h4M27.5 6V2h-4M4.5 26v4h4M27.5 26v4h-4" fill="none" stroke="#EFEADD" stroke-width="1.8"/>
+  <g transform="translate(53 24) rotate(-55)">
+    <path class="o kiefer-o" d="M0 0L10 0A10 10 0 0 0-10 0Z" transform="rotate(-28)"/>
+    <path class="o kiefer-u" d="M0 0L10 0A10 10 0 0 1-10 0Z" transform="rotate(28)"/>
+  </g>
+  <!-- Augen auf Stielen -->
+  <path class="bein" d="M27 31l-3-11M37 31l3-11"/>
+  <circle class="o" cx="23.5" cy="17" r="4.6"/><circle class="o" cx="40.5" cy="17" r="4.6"/>
+  <!-- Sonnenbrille -->
+  <path class="d" stroke="#EFEADD" stroke-width="1.5" stroke-linejoin="round" d="M15.5 13.5h14l-1.2 6.2c-.4 1.8-1.8 2.8-3.6 2.8h-4.6c-1.8 0-3.2-1-3.6-2.8z"/>
+  <path class="d" stroke="#EFEADD" stroke-width="1.5" stroke-linejoin="round" d="M34.5 13.5h14l-1.2 6.2c-.4 1.8-1.8 2.8-3.6 2.8h-4.6c-1.8 0-3.2-1-3.6-2.8z"/>
+  <path d="M29.4 15.2q2.6-1.6 5.2 0" stroke="#EFEADD" stroke-width="1.5" fill="none"/>
+  <path d="M18 15.6l3 0M37 15.6l3 0" stroke="#EFEADD" stroke-width="1.4" stroke-linecap="round" opacity=".85"/>
+  <!-- Panzer -->
+  <path class="o" d="M14 41c0-8.5 8-13 18-13s18 4.5 18 13c0 3.5-2.5 6-6 6H20c-3.5 0-6-2.5-6-6z"/>
+  <!-- Filmstreifen-Loecher auf dem Panzer -->
+  <rect class="d" x="21" y="35" width="3" height="3"/><rect class="d" x="27" y="35" width="3" height="3"/><rect class="d" x="34" y="35" width="3" height="3"/><rect class="d" x="40" y="35" width="3" height="3"/>
+  <!-- Grinsen -->
+  <path d="M27.5 42q5 4 9.5-.5" stroke="#1D2418" stroke-width="2" fill="none" stroke-linecap="round"/>
 </svg>
